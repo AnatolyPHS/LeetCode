@@ -12,10 +12,9 @@ public class Solution : MonoBehaviour
         int minValue = int.MaxValue;
         int maxValue = int.MinValue;
 
-
         for (int i = 0 ; i < nums.Length; i++){
             int currentValue = nums[i];
-            if (currentValue < 0){
+            if (currentValue <= 0){
                 continue;
             }
 
@@ -28,16 +27,31 @@ public class Solution : MonoBehaviour
             }
         }
 
-        if (minValue > 1 || minValue <= 0) {
+        if (minValue > 1) {
             return 1;
         }
 
-        int smallestPositive = minValue;
+        int minValueSecondLap = minValue;
+        int maxValueSecondLap = maxValue;
 
         for (int i = 0 ; i < nums.Length; i++){
+            if (nums[i] <= 0){
+                continue;
+            }
             
+            if(nums[i] == minValueSecondLap + 1){
+                minValueSecondLap++;
+            }
+
+            if(nums[i] == maxValueSecondLap - 1){
+                minValueSecondLap--;
+            }
         }
 
-        return smallestPositive;
+        if(maxValueSecondLap - minValueSecondLap > 1){
+            return (minValueSecondLap + 1);
+        }
+
+        return maxValueSecondLap + 1;
     }
 }
