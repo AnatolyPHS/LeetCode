@@ -1,60 +1,51 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Solution : MonoBehaviour
 {
     private void Start()
     {
-        /*int[] nums = new int[] { 100000, 3, 4000, 2, 15, 1, 99999 };*/
-        /*int[] nums = new int[] { 1,2,0 };*/
-        /*int[] nums = new int[] { 3,4,-1,1};*/
-        int[] nums = new int[] { 0,-1,3,1};
-        FirstMissingPositive(nums);
+        int[] height = new int[] {2,0,2};
+        Debug.Log(Trap(height));
     }
     
-    public int FirstMissingPositive(int[] nums) {
-        int minValue = int.MaxValue;
-        int maxValue = int.MinValue;
-        
-        for (int i = 0 ; i < nums.Length; i++){
-            int currentValue = nums[i];
-            if (currentValue <= 0){
-                continue;
+        public int Trap(int[] height) {
+            int highestPoint = 0;
+            Dictionary<int, bool[]> levelBlocks = new Dictionary<int, bool[]>();
+    
+            for (int i = 0; i < height.Length; i++){
+                if (height[i] > highestPoint){
+                    highestPoint = height[i];
+                }
+    
+                for(int j = 0; j < height[i] + 1; j++){
+                    if (levelBlocks.ContainsKey(j) == false){
+                        levelBlocks[j] = new bool[height.Length];
+                    }
+    
+                    levelBlocks[j][i] = height[i] > j;
+                }
             }
-
-            if (minValue > currentValue){
-                minValue = currentValue;
+    
+                    
+            int finalCount = 0;
+    
+            for  (int i = 0; i < highestPoint; i++){
+                bool[] level = levelBlocks[i];
+                int openPosition = -1;
+                for (int j = 0; j < level.Length; j++){
+                    if (level[j] == true){
+                        if (openPosition < 0 || i - openPosition == 1){
+                            openPosition = j;
+                            continue;
+                        }
+    
+                        finalCount += (j - openPosition - 1);
+                        openPosition = j;
+                    }
+                }
             }
-
-            if (maxValue < currentValue){
-                maxValue = currentValue;
-            }
+    
+            return finalCount;
         }
-
-        if (minValue > 1) {
-            return 1;
-        }
-
-        int sortedIndex = 0;
-        while (sortedIndex < nums.Length)
-        {
-            int index = nums[sortedIndex] - 1;
-            if (nums[sortedIndex] > 0 && nums[sortedIndex] < nums.Length && nums[sortedIndex] != nums[index])
-            {
-                (nums[sortedIndex], nums[index]) = (nums[index], nums[sortedIndex]);
-                continue;
-            }
-            
-            sortedIndex++;
-        }
-        
-        for (int i = 1; i < nums.Length; i++)
-        {
-            if (nums[i] - nums[i - 1] != 1)
-            {
-                return nums[i -1] + 1;
-            }
-        }
-
-        return maxValue + 1;
-    }
 }
