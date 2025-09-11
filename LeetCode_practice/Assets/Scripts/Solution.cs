@@ -63,41 +63,42 @@ public class Solution : MonoBehaviour
     
     public int Trap(int[] height) {
         int highestPoint = 0;
-        Dictionary<int, bool[]> levelBlocks = new Dictionary<int, bool[]>();
+        Dictionary<int, Stack<int>> levelBlocks = new Dictionary<int, Stack<int>>();
 
         for (int i = 0; i < height.Length; i++){
             if (height[i] > highestPoint){
                 highestPoint = height[i];
             }
-            
-            for(int j = 0; j < height[i]; j++){
-                if (levelBlocks.ContainsKey(j) == false){
-                    levelBlocks[j] = new bool[height.Length];
-                }
-
-                levelBlocks[j][i] = height[i] > j;
-            }
         }
 
-                
+        for (int i = 0; i < highestPoint; i++)
+        {
+            levelBlocks[i] = new Stack<int>();
+            for(int j = 0; j < height.Length; j++){
+                if (height[j] > i){
+                    levelBlocks[i].Push(j);
+                } 
+            }
+        }
+        
         int finalCount = 0;
+        for (int i = 0; i < highestPoint; i++)
+        {
+            Stack<int> currentLevel = levelBlocks[i];
+            if (currentLevel.Count <= 1)
+            {
+                continue;
+            }
 
-        for  (int i = 0; i < highestPoint; i++){
-            bool[] level = levelBlocks[i];
-            int openPosition = -1;
-            for (int j = 0; j < level.Length; j++){
-                if (level[j] == true){
-                    if (openPosition < 0 || j - openPosition == 1){
-                        openPosition = j;
-                        continue;
-                    }
-
-                    finalCount += (j - openPosition - 1);
-                    openPosition = j;
-                }
+            int lastElement = currentLevel.Pop();
+            while (currentLevel.Count > 0)
+            {
+                int currentElement = currentLevel.Pop();
+                finalCount += lastElement - currentElement - 1;
+                lastElement = currentElement;
             }
         }
-
+        
         return finalCount;
     }
 }
