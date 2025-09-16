@@ -38,8 +38,8 @@ public class Solution : MonoBehaviour
           {
               char patternSymbol = p[j];
               isAsterix = patternSymbol == '*';
-              
-              for (int i = s.Length - 1 - j; i >= 0 ; i--)
+              int stepsProcessed = (p.Length - 1 - j);
+              for (int i = s.Length - 1 - stepsProcessed; i >= 0 ; i--)
               {
                     matchArray[i,j] = patternSymbol == s[i] || isAsterix || patternSymbol == '?';
                     if (isAsterix == false)
