@@ -6,20 +6,47 @@ public class Solution : MonoBehaviour
     private void Start() {
         string s = "adceb";
         string p = "*a*b";
+        /*string s = "aa";
+        string p = "a";*/
         bool result = IsMatch(s, p);
-        Debug.Log(result); // Output: true
+        Debug.Log(result); 
     }
     
     public bool IsMatch(string s, string p) {
+        if (p.Length > s.Length)
+        {
+            int asterixNumber = 0;
+            for (int i = 0; i < p.Length; i++)
+            {
+                if (p[i] == '*')
+                {
+                    asterixNumber++;
+                }
+            }
+
+            if (p.Length - asterixNumber > s.Length)
+            {
+                return false;
+            }
+        }
+        
           bool[,] matchArray = new bool[s.Length, p.Length];
 
-          for(int i = s.Length -1; i >= 0 ; i--)
+          bool isAsterix = false; 
+          
+          for (int j = p.Length - 1; j >= 0; j--)
           {
-              char prevSymbol = ' ';
-            for(int j = p.Length -1; j >= 0; j--){
-                matchArray[i,j] = p[j] == s[i] || p[j] == '*' || prevSymbol == '*' || p[j] == '?';
-                prevSymbol = p[j];
-            }
+              char patternSymbol = p[j];
+              isAsterix = patternSymbol == '*';
+              
+              for (int i = s.Length - 1 - j; i >= 0 ; i--)
+              {
+                    matchArray[i,j] = patternSymbol == s[i] || isAsterix || patternSymbol == '?';
+                    if (isAsterix == false)
+                    {
+                        break;
+                    }
+              }
           }
 
           bool hasMatch = false;
@@ -61,10 +88,10 @@ public class Solution : MonoBehaviour
     }
 
     private bool[,] RemoveLastRow(bool[,] array){
-        bool[,] finalArray = new bool[array.GetLength(0),array.GetLength(1) - 1];
+        bool[,] finalArray = new bool[array.GetLength(0) - 1,array.GetLength(1)];
 
-        for (int i = 0; i <array.GetLength(0); i++){
-            for(int j = 0; j < array.GetLength(1) - 1; j++){
+        for (int i = 0; i <array.GetLength(0) - 1; i++){
+            for(int j = 0; j < array.GetLength(1); j++){
                 finalArray[i,j] = array[i,j];
             }
         }
@@ -73,10 +100,10 @@ public class Solution : MonoBehaviour
     }
 
     private bool[,] RemoveLastColumn(bool[,] array){
-        bool[,] finalArray = new bool[array.GetLength(0) - 1,array.GetLength(1)];
+        bool[,] finalArray = new bool[array.GetLength(0),array.GetLength(1) - 1];
 
-        for (int i = 0; i < array.GetLength(0) - 1; i++){
-            for(int j = 0; j < array.GetLength(1); j++){
+        for (int i = 0; i < array.GetLength(0); i++){
+            for(int j = 0; j < array.GetLength(1) - 1; j++){
                 finalArray[i,j] = array[i,j];
             }
         }
