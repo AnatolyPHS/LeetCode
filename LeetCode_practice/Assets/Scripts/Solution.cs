@@ -1,67 +1,161 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Solution : MonoBehaviour
 {    
     private void Start() {
-        /*string s = "adceb";
-        string p = "*a*b";*/
-        /*string s = "aa";
-        string p = "a";*/
-        string s = "aa";
-        string p = "*";
-        bool result = IsMatch(s, p);
-        Debug.Log(result); 
+        IList<IList<string>> result = SolveNQueens(4);
+        foreach (var row in result)
+        {
+            foreach (var col in row)
+            {
+                Debug.Log(col);
+            }
+        }
     }
     
-    public bool IsMatch(string s, string p)
-    {
-        bool[,] finalMatchTable = new bool[s.Length + 1, p.Length + 1];
-        finalMatchTable[0, 0] = true;
+    public IList<IList<string>> SolveNQueens(int n) {
+        IList<IList<string>> final = new List<IList<string>>();
 
-        for (int i = 1; i <= p.Length; i++)
-        {
-            if (p[i - 1] == '*')
-            {
-                finalMatchTable[0, i] = finalMatchTable[0, i - 1];
-            }
-            else
-            {
-                break;
+        int[,] board = new int[n,n]; // 0 - empty cell 1 - queen -1 - inaccessible
+
+        for (int i = 0; i < n ; i++){
+            for (int j = 0; j < n ; j++){
+                there is no queen initial number
+                if (PlaceQueenSucceed(i,j, board, asdfasdfasdf)){
+                    IList<string> result = CalculateResult(board);
+                    if (final.Contains(result) == false){
+                        final.Add(result);
+                    }
+                }
+                RefreshBoard(board);
             }
         }
 
-        for (int i = 1; i <= s.Length; i++)
-        {
-            for (int j = 1; j <= p.Length; j++)
-            {
-                if (p[j - 1] == '*')
-                {
-                    finalMatchTable[i, j] = finalMatchTable[i - 1, j] || finalMatchTable[i, j - 1];
-                    continue;
-                }
-
-                if (p[j - 1] == '?' || s[i - 1] == p[j - 1])
-                {
-                    finalMatchTable[i ,j] = finalMatchTable[i - 1, j - 1];
-                }
-            }
-        }
-
-        PrintTable(finalMatchTable);
-        return finalMatchTable[s.Length, p.Length]; 
+        return final;
     }
 
-    private void PrintTable(bool[,] matchArray)
+    private IList<string> CalculateResult(int[,] board)
     {
-        string table = "";
-        for (int i = 0; i < matchArray.GetLength(0); i++)
-        {
-            for (int j = 0; j < matchArray.GetLength(1); j++)
-            {
-                table += matchArray[i, j] ? "T " : "F ";
+        IList<string> result = new List<string>();
+
+        int boardSize = board.GetLength(0);
+        for (int i = 0; i < boardSize; i++){
+            string row = "";
+            for (int j = 0; j < boardSize; j++){
+                row += board[i,j] == 1 ? "Q" : ".";
             }
-            table += "\n";
+            result.Add(row);
         }
-        Debug.Log(table);
+
+        return result;
+    }
+
+    private bool PlaceQueenSucceed(int posX, int posY, int[,] board, int queensLeft){
+        board[posX, posY] = 1;
+        queensLeft--;
+        if (queensLeft <= 0){
+            return true;
+        }
+        RefreshAccessiblePosition(board);
+
+        int boardSize = board.GetLength(0);
+        for (int i = posX; i < boardSize; i++){
+            for (int j = posX; j < boardSize; j++){
+                if (board[i,j] == 0 && PlaceQueenSucceed(i, j,  board, queensLeft) == true){
+                    return true;
+                }
+            }
+        }
+
+        //redo placement
+        board[posX, posY] = 0;
+        RefreshAccessiblePosition(board);
+
+        return false;
+    }
+
+    private void RefreshAccessiblePosition(int[,] board){
+        for (int i = 0; i < board.GetLength(0) ; i++)
+        {
+            for (int j = 0; j < board.GetLength(1) ; j++)
+            {
+                board[i,j] = CalculateAccessibility(i, j, board);
+            }
+        }
+    }
+
+    private int CalculateAccessibility(int posX, int posY, int[,] board){
+        if (board[posX, posY] == 1){
+            return 1;
+        }
+
+        int boardSize = board.GetLength(0);
+
+        //check rows and columns
+        for (int pos = 0; pos < boardSize; pos++){
+            if (board[posX, pos] == 1 || board[pos, posY] == 1){
+                return -1;
+            }
+        }
+
+        //check diagonal
+        int i = posX;
+        int j = posY;
+        while(i < boardSize && j < boardSize){
+            if(board[i,j] == 1){
+                return -1;
+            }
+
+            i++;
+            j++;
+        }
+
+        i = posX;
+        j = posY;
+        while(i >= 0 && j >= 0){
+            if(board[i,j] == 1){
+                return -1;
+            }
+            
+            i--;
+            j--;
+        }
+
+        i = posX;
+        j = posY;
+        while(i >= 0 && j < boardSize){
+            if(board[i,j] == 1){
+                return -1;
+            }
+            
+            i--;
+            j++;
+        }
+
+        i = posX;
+        j = posY;
+        while(i < boardSize && j >= 0){
+            if(board[i,j] == 1){
+                return -1;
+            }
+            
+            i++;
+            j--;
+        }
+
+        return 0;
+    }
+
+    private void RefreshBoard(int[,] board){
+        int boardSize = board.GetLength(0);
+        
+        for (int i = 0; i < boardSize ; i++)
+        {
+            for (int j = 0; j < boardSize ; j++)
+            {
+                board[i,j] = 0;
+            }
+        }
     }
 }
