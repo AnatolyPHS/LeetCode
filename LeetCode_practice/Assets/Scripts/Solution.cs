@@ -18,21 +18,49 @@ public class Solution : MonoBehaviour
         IList<IList<string>> final = new List<IList<string>>();
 
         int[,] board = new int[n,n]; // 0 - empty cell 1 - queen -1 - inaccessible
-
+        
         for (int i = 0; i < n ; i++){
             for (int j = 0; j < n ; j++){
-                there is no queen initial number
-                if (PlaceQueenSucceed(i,j, board, asdfasdfasdf)){
+                if (PlaceQueenSucceed(i,j, board, n)){
                     IList<string> result = CalculateResult(board);
-                    if (final.Contains(result) == false){
-                        final.Add(result);
-                    }
+                    final.Add(result);
                 }
                 RefreshBoard(board);
             }
         }
 
+        RemoveDuplications(final);
+        
         return final;
+    }
+
+    private void RemoveDuplications(IList<IList<string>> final)
+    {
+        for (int i = final.Count - 1; i >= 0; i--)
+        {
+            IList<string> targetStrings = final[i];
+            for (int j = 0; j < i; j++)
+            {
+                if (IsSimilar(final[j], targetStrings))
+                {
+                    final.Remove(final[j]);
+                    break;
+                }
+            }
+        }
+    }
+
+    private bool IsSimilar(IList<string> list, IList<string> targetStrings)
+    {
+        for (int i = 0; i < list.Count; i++)
+        {
+            if (list[i] != targetStrings[i])
+            {
+                return false;
+            }
+        }
+        
+        return true;
     }
 
     private IList<string> CalculateResult(int[,] board)
@@ -58,10 +86,10 @@ public class Solution : MonoBehaviour
             return true;
         }
         RefreshAccessiblePosition(board);
-
+        
         int boardSize = board.GetLength(0);
-        for (int i = posX; i < boardSize; i++){
-            for (int j = posX; j < boardSize; j++){
+        for (int i = 0; i < boardSize; i++){
+            for (int j = 0; j < boardSize; j++){
                 if (board[i,j] == 0 && PlaceQueenSucceed(i, j,  board, queensLeft) == true){
                     return true;
                 }
