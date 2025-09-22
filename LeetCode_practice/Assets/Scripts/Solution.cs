@@ -1,10 +1,11 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Solution : MonoBehaviour
 {    
     private void Start() {
-        IList<IList<string>> result = SolveNQueens(4);
+        IList<IList<string>> result = SolveNQueens(5);
         foreach (var row in result)
         {
             foreach (var col in row)
@@ -14,47 +15,41 @@ public class Solution : MonoBehaviour
         }
     }
     
-    public IList<IList<string>> SolveNQueens(int n) {
-        IList<IList<string>> final = new List<IList<string>>();
-
-        int[,] board = new int[n,n]; // 0 - empty cell 1 - queen -1 - inaccessible
-        
-        for (int i = 0; i < n ; i++){
-            for (int j = 0; j < n ; j++){
-                if (PlaceQueenSucceed(i,j, board, n)){
-                    IList<string> result = CalculateResult(board);
-                    final.Add(result);
-                }
-                RefreshBoard(board);
-            }
-        }
-
-        RemoveDuplications(final);
-        
-        return final;
-    }
-
-    private void RemoveDuplications(IList<IList<string>> final)
+    private IList<IList<string>> solutions = new List<IList<string>>();
+    private int[] resultQueens;
+    private int n;
+    
+    public IList<IList<string>> SolveNQueens(int n)
     {
-        for (int i = final.Count - 1; i >= 0; i--)
+        this.n = n;
+        resultQueens = new int[n];
+        PlaceQueen(0);
+        return solutions;
+    }
+    
+    private void PlaceQueen(int row)
+    {
+        if (row == n)
         {
-            IList<string> targetStrings = final[i];
-            for (int j = 0; j < i; j++)
+            CreateResultString();
+            return;
+        }
+        
+        for (int col = 0; col < n; col++)
+        {
+            if (CanBePlaced(row, col))
             {
-                if (IsSimilar(final[j], targetStrings))
-                {
-                    final.Remove(final[j]);
-                    break;
-                }
+                resultQueens[row] = col;
+                PlaceQueen(row + 1);
             }
         }
     }
-
-    private bool IsSimilar(IList<string> list, IList<string> targetStrings)
+    
+    private bool CanBePlaced(int row, int col)
     {
-        for (int i = 0; i < list.Count; i++)
+        for (int i = 0; i < row; i++)
         {
-            if (list[i] != targetStrings[i])
+            if (resultQueens[i] == col || Math.Abs(row - i) == Math.Abs(col - resultQueens[i]))
             {
                 return false;
             }
@@ -62,128 +57,23 @@ public class Solution : MonoBehaviour
         
         return true;
     }
-
-    private IList<string> CalculateResult(int[,] board)
+    
+    private void CreateResultString()
     {
-        IList<string> result = new List<string>();
-
-        int boardSize = board.GetLength(0);
-        for (int i = 0; i < boardSize; i++){
-            string row = "";
-            for (int j = 0; j < boardSize; j++){
-                row += board[i,j] == 1 ? "Q" : ".";
-            }
-            result.Add(row);
-        }
-
-        return result;
-    }
-
-    private bool PlaceQueenSucceed(int posX, int posY, int[,] board, int queensLeft){
-        board[posX, posY] = 1;
-        queensLeft--;
-        if (queensLeft <= 0){
-            return true;
-        }
-        RefreshAccessiblePosition(board);
-        
-        int boardSize = board.GetLength(0);
-        for (int i = 0; i < boardSize; i++){
-            for (int j = 0; j < boardSize; j++){
-                if (board[i,j] == 0 && PlaceQueenSucceed(i, j,  board, queensLeft) == true){
-                    return true;
-                }
-            }
-        }
-
-        //redo placement
-        board[posX, posY] = 0;
-        RefreshAccessiblePosition(board);
-
-        return false;
-    }
-
-    private void RefreshAccessiblePosition(int[,] board){
-        for (int i = 0; i < board.GetLength(0) ; i++)
+        IList<string> solution = new List<string>();
+    
+        for (int row = 0; row < n; row++)
         {
-            for (int j = 0; j < board.GetLength(1) ; j++)
+            char[] rowArray = new char[n];
+            for (int col = 0; col < n; col++)
             {
-                board[i,j] = CalculateAccessibility(i, j, board);
-            }
-        }
-    }
-
-    private int CalculateAccessibility(int posX, int posY, int[,] board){
-        if (board[posX, posY] == 1){
-            return 1;
-        }
-
-        int boardSize = board.GetLength(0);
-
-        //check rows and columns
-        for (int pos = 0; pos < boardSize; pos++){
-            if (board[posX, pos] == 1 || board[pos, posY] == 1){
-                return -1;
-            }
-        }
-
-        //check diagonal
-        int i = posX;
-        int j = posY;
-        while(i < boardSize && j < boardSize){
-            if(board[i,j] == 1){
-                return -1;
-            }
-
-            i++;
-            j++;
-        }
-
-        i = posX;
-        j = posY;
-        while(i >= 0 && j >= 0){
-            if(board[i,j] == 1){
-                return -1;
+                rowArray[col] = '.';
             }
             
-            i--;
-            j--;
+            rowArray[resultQueens[row]] = 'Q';
+            solution.Add(new string(rowArray));
         }
-
-        i = posX;
-        j = posY;
-        while(i >= 0 && j < boardSize){
-            if(board[i,j] == 1){
-                return -1;
-            }
-            
-            i--;
-            j++;
-        }
-
-        i = posX;
-        j = posY;
-        while(i < boardSize && j >= 0){
-            if(board[i,j] == 1){
-                return -1;
-            }
-            
-            i++;
-            j--;
-        }
-
-        return 0;
-    }
-
-    private void RefreshBoard(int[,] board){
-        int boardSize = board.GetLength(0);
-        
-        for (int i = 0; i < boardSize ; i++)
-        {
-            for (int j = 0; j < boardSize ; j++)
-            {
-                board[i,j] = 0;
-            }
-        }
+    
+        solutions.Add(solution);
     }
 }
