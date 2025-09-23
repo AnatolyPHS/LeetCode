@@ -1,11 +1,9 @@
-using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Solution : MonoBehaviour
 {    
     private void Start() {
-        string result = GetPermutation(3,3);
+        string result = GetPermutation(4,9);
         Debug.Log(result);
     }
     
@@ -32,9 +30,9 @@ public class Solution : MonoBehaviour
         step--;
 
         int currentArrayValue = CalculateValue(inputArray);
-
-        for (int i = 0; i < inputArray.Length; i++){
-            for (int j = i + 1; j < inputArray.Length; j++){
+        //permutation logic is wrong
+        for (int i = inputArray.Length - 1; i >= 0 ; i--){
+            for (int j = i - 1; j >= 0; j--){
                 int tmp = inputArray[i];
                 inputArray[i] = inputArray[j];
                 inputArray[j] = tmp;
@@ -57,9 +55,24 @@ public class Solution : MonoBehaviour
     private int CalculateValue(int[] inputArray){
         int finalSumm = 0;
         for(int i = inputArray.Length - 1; i >= 0 ; i--){
-            finalSumm += inputArray[i] * 10^i;
+            finalSumm += inputArray[i] * Power(10, (inputArray.Length - i - 1));
         }
 
         return finalSumm;
+    }
+    
+    private int Power(int baseValue, int exponent)
+    {
+        if (exponent == 0)
+        {
+            return 1;
+        }
+
+        int result = 1;
+        for (int i = 0; i < exponent; i++)
+        {
+            result *= baseValue;
+        }
+        return result;
     }
 }
