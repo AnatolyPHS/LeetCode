@@ -5,75 +5,61 @@ using UnityEngine;
 public class Solution : MonoBehaviour
 {    
     private void Start() {
-        IList<IList<string>> result = SolveNQueens(5);
-        foreach (var row in result)
-        {
-            foreach (var col in row)
-            {
-                Debug.Log(col);
-            }
-        }
+        string result = GetPermutation(3,3);
+        Debug.Log(result);
     }
     
-    private IList<IList<string>> solutions = new List<IList<string>>();
-    private int[] resultQueens;
-    private int n;
-    
-    public IList<IList<string>> SolveNQueens(int n)
-    {
-        this.n = n;
-        resultQueens = new int[n];
-        PlaceQueen(0);
-        return solutions;
-    }
-    
-    private void PlaceQueen(int row)
-    {
-        if (row == n)
-        {
-            CreateResultString();
-            return;
+    public string GetPermutation(int n, int k) {
+        int[] numbers = new int[n];
+        for (int i = 1 ; i <= n; i++){
+            numbers[i - 1] = i;
         }
-        
-        for (int col = 0; col < n; col++)
-        {
-            if (CanBePlaced(row, col))
-            {
-                resultQueens[row] = col;
-                PlaceQueen(row + 1);
+
+        int[] final =  GetPermutatedArrayAtStep(numbers, k);
+
+        string result = "";
+        for (int i = 0; i < final.Length; i++){
+            result += final[i].ToString();
+        }
+
+        return result;
+    }
+
+    private int[] GetPermutatedArrayAtStep(int[] inputArray, int step){
+        if (step == 0){
+            return inputArray;
+        }
+        step--;
+
+        int currentArrayValue = CalculateValue(inputArray);
+
+        for (int i = 0; i < inputArray.Length; i++){
+            for (int j = i + 1; j < inputArray.Length; j++){
+                int tmp = inputArray[i];
+                inputArray[i] = inputArray[j];
+                inputArray[j] = tmp;
+                int nextMinValue =  CalculateValue(inputArray);
+
+                if (currentArrayValue > nextMinValue){
+                    tmp = inputArray[i];
+                    inputArray[i] = inputArray[j];
+                    inputArray[j] = tmp;
+                    continue;
+                }
+
+                return GetPermutatedArrayAtStep(inputArray, step);
             }
         }
+
+        return  inputArray;
     }
-    
-    private bool CanBePlaced(int row, int col)
-    {
-        for (int i = 0; i < row; i++)
-        {
-            if (resultQueens[i] == col || Math.Abs(row - i) == Math.Abs(col - resultQueens[i]))
-            {
-                return false;
-            }
+
+    private int CalculateValue(int[] inputArray){
+        int finalSumm = 0;
+        for(int i = inputArray.Length - 1; i >= 0 ; i--){
+            finalSumm += inputArray[i] * 10^i;
         }
-        
-        return true;
-    }
-    
-    private void CreateResultString()
-    {
-        IList<string> solution = new List<string>();
-    
-        for (int row = 0; row < n; row++)
-        {
-            char[] rowArray = new char[n];
-            for (int col = 0; col < n; col++)
-            {
-                rowArray[col] = '.';
-            }
-            
-            rowArray[resultQueens[row]] = 'Q';
-            solution.Add(new string(rowArray));
-        }
-    
-        solutions.Add(solution);
+
+        return finalSumm;
     }
 }
