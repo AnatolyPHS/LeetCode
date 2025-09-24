@@ -29,23 +29,25 @@ public class Solution : MonoBehaviour
         }
         step--;
 
-        int currentArrayValue = CalculateValue(inputArray);
-        //permutation logic is wrong
-        for (int i = inputArray.Length - 1; i >= 0 ; i--){
+        int[] tmpArray = new int[inputArray.Length];
+        inputArray.CopyTo(tmpArray, 0);
+        
+        int currentArrayValue = CalculateValue(tmpArray);
+        for (int i = tmpArray.Length - 1; i >= 0 ; i--){
             for (int j = i - 1; j >= 0; j--){
-                int tmp = inputArray[i];
-                inputArray[i] = inputArray[j];
-                inputArray[j] = tmp;
-                int nextMinValue =  CalculateValue(inputArray);
+                int tmp = tmpArray[i];
+                tmpArray[i] = tmpArray[j];
+                tmpArray[j] = tmp;
+                int nextMinValue =  CalculateValue(tmpArray);
 
                 if (currentArrayValue > nextMinValue){
-                    tmp = inputArray[i];
-                    inputArray[i] = inputArray[j];
-                    inputArray[j] = tmp;
+                    tmp = tmpArray[i];
+                    tmpArray[i] = tmpArray[j];
+                    tmpArray[j] = tmp;
                     continue;
                 }
 
-                return GetPermutatedArrayAtStep(inputArray, step);
+                return GetPermutatedArrayAtStep(tmpArray, step);
             }
         }
 
