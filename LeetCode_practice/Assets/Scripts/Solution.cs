@@ -4,37 +4,80 @@ using UnityEngine;
 public class Solution : MonoBehaviour
 {    
     private void Start() {
-        string result = GetPermutation(4,9);
-        Debug.Log(result);
     }
     
-    public string GetPermutation(int n, int k) {
-        List<int> numbers = new List<int>();
-        for (int i = 1; i <= n; i++)
+    private HashSet<char> digits = new HashSet<char>;
+    
+    public bool IsNumber(string s) {
+        for (char c = '0'; c <= '9'; c++)
         {
-            numbers.Add(i);
-        }
-        
-        int[] factorials = new int[n];
-        factorials[0] = 1;
-        for (int i = 1; i < n; i++)
-        {
-            factorials[i] = factorials[i - 1] * i;
-        }
-        
-        k--;
-        
-        string result =  "";
-        
-        for (int i = n - 1; i >= 0; i--)
-        {
-            int index = k / factorials[i];
-            result = result + numbers[index].ToString();
-            numbers.RemoveAt(index);
-
-            k %= factorials[i];
+            digits.Add(c);
         }
 
-        return result.ToString();
+        int dotPositionIndex = -1;
+        int ePositionIndex = -1;
+        int plusminusPositionIndex = -1;
+        int stringLastIndex = s.Length - 1;
+
+        for(int i = stringLastIndex; i >= 0 ; i --){
+            char symbol = s[i];
+
+            if (digits.Contains(symbol)){
+                continue;
+            }
+
+            if (symbol == 'e' || symbol == 'E'){
+                if(i == stringLastIndex){
+                    retunr false;
+                }
+
+                if (i == 0){
+                    return false;
+                }
+                
+                if (ePositionIndex != -1) {
+                    return false;
+                }
+                ePositionIndex = i;
+            }
+
+            if (symbol == '-' || symbol == '+'){
+                if (i == 0){
+                    continue;
+                }
+
+                if (plusminusPositionIndex != -1){
+                    return false;
+                }
+
+                plusminusPositionIndex = i;
+            }
+
+            if (symbol == '.'){
+                if (dotPositionIndex != -1){
+                    return false;
+                }
+
+                dotPositionIndex = i;
+            }
+        }
+
+        return SpecialSymbolsInProperPositions(plusminusPositionIndex, dotPositionIndex, ePositionIndex, s);
+
+    }
+
+    private bool SpecialSymbolsInProperPositions(int plusminusPositionIndex,
+        int dotPositionIndex,int ePositionIndex, string s)
+    {
+        bool positionsAreFine = true;
+        int lastPosition = s.Length - 1;
+
+        if (plusminusPositionIndex != -1){
+            positionsAreFine &= plusminusPositionIndex != lastPosition && digits.Contains(s[plusminusPositionIndex + 1])
+                                                                       && ;
+        }
+        
+
+        return positionsAreFine;
     }
 }
