@@ -3,12 +3,15 @@ using UnityEngine;
 
 public class Solution : MonoBehaviour
 {    
-    private void Start() {
+    private void Start()
+    {
+        IsNumber("+E3");
     }
     
-    private HashSet<char> digits = new HashSet<char>;
+private HashSet<char> digits = new HashSet<char>();
     
     public bool IsNumber(string s) {
+                
         for (char c = '0'; c <= '9'; c++)
         {
             digits.Add(c);
@@ -18,17 +21,23 @@ public class Solution : MonoBehaviour
         int ePositionIndex = -1;
         int plusminusPositionIndex = -1;
         int stringLastIndex = s.Length - 1;
+        int digitsCount = 0;
+
+        if (stringLastIndex == 0){
+            return digits.Contains(s[0]);
+        }
 
         for(int i = stringLastIndex; i >= 0 ; i --){
             char symbol = s[i];
 
             if (digits.Contains(symbol)){
+                digitsCount++;
                 continue;
             }
 
             if (symbol == 'e' || symbol == 'E'){
-                if(i == stringLastIndex){
-                    retunr false;
+                if (i == stringLastIndex){
+                    return false;
                 }
 
                 if (i == 0){
@@ -40,8 +49,7 @@ public class Solution : MonoBehaviour
                 }
                 ePositionIndex = i;
             }
-
-            if (symbol == '-' || symbol == '+'){
+            else if (symbol == '-' || symbol == '+'){
                 if (i == 0){
                     continue;
                 }
@@ -52,14 +60,21 @@ public class Solution : MonoBehaviour
 
                 plusminusPositionIndex = i;
             }
-
-            if (symbol == '.'){
+            else if (symbol == '.'){
                 if (dotPositionIndex != -1){
                     return false;
                 }
 
                 dotPositionIndex = i;
             }
+            else
+            {
+                return false;
+            }
+        }
+
+        if (digitsCount == 0){
+            return false;
         }
 
         return SpecialSymbolsInProperPositions(plusminusPositionIndex, dotPositionIndex, ePositionIndex, s);
@@ -67,14 +82,24 @@ public class Solution : MonoBehaviour
     }
 
     private bool SpecialSymbolsInProperPositions(int plusminusPositionIndex,
-        int dotPositionIndex,int ePositionIndex, string s)
+     int dotPositionIndex,int ePositionIndex, string s)
     {
         bool positionsAreFine = true;
         int lastPosition = s.Length - 1;
 
         if (plusminusPositionIndex != -1){
             positionsAreFine &= plusminusPositionIndex != lastPosition && digits.Contains(s[plusminusPositionIndex + 1])
-                                                                       && ;
+            && ePositionIndex == plusminusPositionIndex - 1;
+        }
+
+        if (dotPositionIndex != -1){
+            positionsAreFine &= (dotPositionIndex == lastPosition) || (digits.Contains(s[dotPositionIndex + 1]));
+        }
+
+        if (ePositionIndex != -1){
+            bool theFirstSymbolIsSign = s[0] == '-' || s[0] == '+';
+            positionsAreFine &= (ePositionIndex != 0 || (ePositionIndex != 1 && theFirstSymbolIsSign)) && (ePositionIndex != lastPosition) 
+            && (digits.Contains(s[ePositionIndex + 1]) || (ePositionIndex + 1 == plusminusPositionIndex &&        (plusminusPositionIndex != lastPosition && digits.Contains(s[plusminusPositionIndex + 1]))));
         }
         
 
