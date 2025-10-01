@@ -5,7 +5,8 @@ public class Solution : MonoBehaviour
 {    
     private void Start()
     {
-        IsNumber("+E3");
+        /*IsNumber("-.E3"); // should be false*/
+        IsNumber("-.E3");// should be false
     }
     
 private HashSet<char> digits = new HashSet<char>();
@@ -91,17 +92,35 @@ private HashSet<char> digits = new HashSet<char>();
             positionsAreFine &= plusminusPositionIndex != lastPosition && digits.Contains(s[plusminusPositionIndex + 1])
             && ePositionIndex == plusminusPositionIndex - 1;
         }
-
+        
+        bool theFirstSymbolIsSign = s[0] == '-' || s[0] == '+';
+        
         if (dotPositionIndex != -1){
-            positionsAreFine &= (dotPositionIndex == lastPosition) || (digits.Contains(s[dotPositionIndex + 1]));
+            positionsAreFine &= (dotPositionIndex == lastPosition) || (digits.Contains(s[dotPositionIndex + 1])) || ePositionIndex == dotPositionIndex + 1;
         }
 
-        if (ePositionIndex != -1){
-            bool theFirstSymbolIsSign = s[0] == '-' || s[0] == '+';
-            positionsAreFine &= (ePositionIndex != 0 || (ePositionIndex != 1 && theFirstSymbolIsSign)) && (ePositionIndex != lastPosition) 
-            && (digits.Contains(s[ePositionIndex + 1]) || (ePositionIndex + 1 == plusminusPositionIndex &&        (plusminusPositionIndex != lastPosition && digits.Contains(s[plusminusPositionIndex + 1]))));
+        if (theFirstSymbolIsSign && lastPosition>= 1)
+        {
+            positionsAreFine &= digits.Contains(s[1]);
         }
         
+        if (ePositionIndex != -1){
+            positionsAreFine &= ePositionIndex != 0;
+            positionsAreFine &= ePositionIndex != lastPosition;
+            positionsAreFine &= (theFirstSymbolIsSign == false) || ePositionIndex > 1;
+
+            if (positionsAreFine == false)
+            {
+                return false;
+            }
+
+            bool ePatterIsFine = (digits.Contains(s[ePositionIndex + 1]) ||
+                                  (ePositionIndex + 1 == plusminusPositionIndex &&
+                                   plusminusPositionIndex != lastPosition &&
+                                   digits.Contains(s[plusminusPositionIndex + 1])));
+            
+            positionsAreFine &= ePatterIsFine;
+        }
 
         return positionsAreFine;
     }
