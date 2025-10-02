@@ -6,7 +6,8 @@ public class Solution : MonoBehaviour
     private void Start()
     {
         /*IsNumber("-.E3"); // should be false*/
-        IsNumber("-.E3");// should be false
+        /*IsNumber("-.E3");// should be false*/
+        IsNumber("+.8");// should be true
     }
     
 private HashSet<char> digits = new HashSet<char>();
@@ -96,10 +97,20 @@ private HashSet<char> digits = new HashSet<char>();
         bool theFirstSymbolIsSign = s[0] == '-' || s[0] == '+';
         
         if (dotPositionIndex != -1){
-            positionsAreFine &= (dotPositionIndex == lastPosition) || (digits.Contains(s[dotPositionIndex + 1])) || ePositionIndex == dotPositionIndex + 1;
+            positionsAreFine &= (dotPositionIndex == lastPosition) || (digits.Contains(s[dotPositionIndex + 1])) 
+                                                                   || ePositionIndex == dotPositionIndex + 1;
         }
 
         if (theFirstSymbolIsSign && lastPosition>= 1)
+        {
+            positionsAreFine &= (digits.Contains(s[1]) || dotPositionIndex == 1);
+            if (dotPositionIndex == 1)
+            {
+                positionsAreFine &= ePositionIndex != 2;
+            }
+        }
+
+        if (dotPositionIndex == 0 && lastPosition>= 1)
         {
             positionsAreFine &= digits.Contains(s[1]);
         }
@@ -120,6 +131,7 @@ private HashSet<char> digits = new HashSet<char>();
                                    digits.Contains(s[plusminusPositionIndex + 1])));
             
             positionsAreFine &= ePatterIsFine;
+            positionsAreFine &= ePositionIndex > dotPositionIndex;
         }
 
         return positionsAreFine;
