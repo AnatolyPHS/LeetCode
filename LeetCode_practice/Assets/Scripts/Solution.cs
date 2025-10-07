@@ -1,10 +1,20 @@
 using System.Collections.Generic;
+using System.Linq;
+
 using UnityEngine;
 
 public class Solution : MonoBehaviour
 {    
     private void Start()
     {
+        /*string[] words = {"This", "is", "an", "example", "of", "text", "justification."};*/
+        string[] words = {"What","must","be","acknowledgment","shall","be"};
+        int maxWidth = 16;
+        IList<string> result = FullJustify(words, maxWidth);
+        foreach( string line in result)
+        {
+            Debug.Log(line);
+        }
     }
 
     private int maxWordWidth = -1;
@@ -41,14 +51,23 @@ public class Solution : MonoBehaviour
             newLine.Add(word);
         }
 
-        ProcessLastLine(result);
+        ProcessLastLine(result.Last());
 
         return result;
     }
 
+    private void ProcessLastLine(string word)
+    {
+        string[] words = word.Split(' ');
+        word = string.Join(" ", words);
+        int spacesToAdd = maxWordWidth - word.Length;
+        string endSpaces = new string(' ', spacesToAdd);
+        word = word + endSpaces;
+    }
+
     private string ConvertListToWord(List<string> newLine, int wordsLength)
     {
-        string finalWord = ''; // need a builder
+        string finalWord = string.Empty; // need a builder
         int spacesToAdd = maxWordWidth - wordsLength;
         int spacesNeeded = newLine.Count - 1;
         int spacesPerPosition = spacesToAdd / spacesNeeded;
@@ -56,12 +75,15 @@ public class Solution : MonoBehaviour
 
         for (int i = 0; i < newLine.Count; i++)
         {
-            finalWord = finalWord + newLine[0];
+            finalWord = finalWord + newLine[i];
             string onlySpaces = new string(' ', spacesPerPosition  + excessiveSpaces > 0 ? 1 : 0);
+            if (i < newLine.Count - 1)
+            {
+                finalWord += onlySpaces;
+            }
+
             excessiveSpaces--;
         }
-        
-        
         
         return finalWord;
     }
