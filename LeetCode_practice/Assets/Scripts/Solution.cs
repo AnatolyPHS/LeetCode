@@ -9,7 +9,8 @@ public class Solution : MonoBehaviour
     private void Start()
     {
         /*string[] words = {"This", "is", "an", "example", "of", "text", "justification."};*/
-        string[] words = {"What","must","be","acknowledgment","shall","be"};
+        /*string[] words = {"What","must","be","acknowledgment","shall","be"};*/
+        string[] words = {"What","must","be","shall","be."};
         int maxWidth = 16;
         IList<string> result = FullJustify(words, maxWidth);
         foreach( string line in result)
@@ -41,6 +42,7 @@ public class Solution : MonoBehaviour
             {
                 newLine.Add(word);
                 numberOfSymbols += word.Length;
+                word = String.Empty;
                 if (isLastWord == false)
                 {
                     continue;
@@ -50,6 +52,10 @@ public class Solution : MonoBehaviour
             if (isLastWord)
             {
                 result.Add(ConvertListToWord(newLine,numberOfSymbols));
+                if (string.IsNullOrEmpty(word) == false)
+                {
+                    result.Add(ConvertListToWord(new List<string>(){word},word.Length));
+                }
                 break;
             }
             
@@ -82,6 +88,12 @@ public class Solution : MonoBehaviour
         int spacesPerPosition = intermediateSpacePositionsNumber == 0 ? spacesToAdd : spacesToAdd / intermediateSpacePositionsNumber;
         int excessiveSpaces =  intermediateSpacePositionsNumber == 0 ? 0 : spacesToAdd % intermediateSpacePositionsNumber;
 
+        if (newLine.Count == 1)
+        {
+            string onlySpaces = new string(' ', spacesToAdd);
+            return newLine[0] + onlySpaces;
+        }
+        
         for (int i = 0; i < newLine.Count; i++)
         {
             finalWord = finalWord + newLine[i];
