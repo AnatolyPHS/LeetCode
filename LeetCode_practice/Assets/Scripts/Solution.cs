@@ -11,7 +11,7 @@ public class Solution : MonoBehaviour
         /*string[] words = {"This", "is", "an", "example", "of", "text", "justification."};*/
         /*string[] words = {"What","must","be","acknowledgment","shall","be"};*/
         string[] words = {"What","must","be","shall","be."};
-        int maxWidth = 16;
+        int maxWidth = 5;
         IList<string> result = FullJustify(words, maxWidth);
         foreach( string line in result)
         {
@@ -34,6 +34,12 @@ public class Solution : MonoBehaviour
             bool isLastWord = i == words.Length - 1;
 
             if (word.Length == maxWidth){
+                if (newLine.Count > 0)
+                {
+                    result.Add(ConvertListToWord(newLine,numberOfSymbols));
+                    newLine.Clear();
+                    numberOfSymbols = 0;
+                }
                 result.Add(word);
                 continue;
             }
