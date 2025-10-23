@@ -21,7 +21,7 @@ public class Solution : MonoBehaviour
             return "";
         }
 
-        for (int frameLength = tLength; frameLength < sLength; frameLength++)
+        for (int frameLength = tLength; frameLength <= sLength; frameLength++)
         {
             for (int i = 0; i <= s.Length - frameLength; i++)
             {
