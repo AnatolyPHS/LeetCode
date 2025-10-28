@@ -51,9 +51,9 @@ public class Solution : MonoBehaviour
                 AddToFound(rightLetter, lettersFound);
             }
 
-            while (AllCharactersFound(lettersFound, pattern) && leftPosition < inputStringLength - patternLength)
+            while (AllCharactersFound(lettersFound, pattern) && leftPosition <= inputStringLength - patternLength)
             {
-                int currentWindowLength = rightPosition - leftPosition;
+                int currentWindowLength = rightPosition - leftPosition + 1;
                 if (currentWindowLength < minLength)
                 {
                     minLength = currentWindowLength;
@@ -115,8 +115,7 @@ public class Solution : MonoBehaviour
 
     private bool CanAdd(char rightLetter, Dictionary<char, int> lettersFound, Dictionary<char, int> pattern)
     {
-        return pattern.ContainsKey(rightLetter) &&
-               (!lettersFound.ContainsKey(rightLetter) || lettersFound[rightLetter] < pattern[rightLetter]);
+        return pattern.ContainsKey(rightLetter);
     }
 
     /*public string MinWindow(string s, string t)
